@@ -1,8 +1,1 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+A lightweight and efficient social media application built using Vite and React. This app allows users to create and upload posts containing messages. Each post includes real-time updates on the number of reactions it has received, providing immediate feedback on its engagement. Users also have the ability to delete their posts easily, offering a seamless and intuitive experience. The app leverages modern front-end technologies to ensure fast performance, smooth interactions, and a clean, user-friendly interface.
