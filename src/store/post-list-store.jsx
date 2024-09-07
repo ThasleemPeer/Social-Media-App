@@ -1,19 +1,18 @@
-import { act, createContext, useReducer } from "react";
-
- const DEFAULT_CONTEXT={
+import {  createContext, useReducer } from "react";
+ export const PostList=createContext({
     postList:[],
     addPost:()=>{},
+    addInitialPosts:()=>{},
     deletePost:()=>{},
-}
-
-
- export const PostList=createContext({DEFAULT_CONTEXT});
+ });
 
 const postListReducer=(currPostList,action)=>{
     let newPostList=currPostList
     if (action.type==='DELETE_POST'){
         newPostList=currPostList.filter(post=>post.id!==action.payload.postId);
 
+    } else if (action.type==='ADD_INITIAL_POSTS'){
+        newPostList=action.payload.posts;
     } else if (action.type==='ADD_POST'){
         newPostList=[action.payload,...currPostList]
     }
@@ -22,7 +21,7 @@ const postListReducer=(currPostList,action)=>{
     
 };
 const PostListProvider=({children})=>{
-    const[postList,dispatchPostList]=useReducer(postListReducer,DEFAULT_POST_LIST);
+    const[postList,dispatchPostList]=useReducer(postListReducer,[]);
 
 
     const addPost=(userId,postTitle,postbody,reactions,tags)=>{
@@ -39,6 +38,16 @@ const PostListProvider=({children})=>{
         })
 
     }
+    // the below code is used for add more no.of posts when the posts are fetched from server using dummy api f
+    const addInitialPosts=(posts)=>{
+        dispatchPostList({
+            type:'ADD_INITIAL_POSTS',
+            payload:{
+                posts,
+            }
+        })
+
+    }
 
     const deletePost=(postId)=>{
         console.log(`delete post called for ${postId}`);
@@ -51,35 +60,12 @@ const PostListProvider=({children})=>{
 
     }
     return <PostList.Provider value={
-        {
-        postList:postList,
-        addPost:addPost,
-        deletePost:deletePost
-        }
+        {postList,addPost,addInitialPosts,deletePost}
     }>
         {children}
     </PostList.Provider>
 
 }
-
-const DEFAULT_POST_LIST=[
-    {
-        id:'1',
-        title:'Going to Mumbai',
-        body:'Hi! Friends, I am going to Mumbai for my Vacations,Hope to enjoy a lot .Peace Out!!',
-        reactions:2,
-        userId:'user-9',
-        tags:["vacation","Mumbai","Enjoying"]
-    },
-    {
-        id:'2',
-        title:"Placed at one of the FAANG's",
-        body:"16 saal ki mehnat ka $ phal. Beleive in God's Plan",
-        reactions:55,
-        userId:'user-361',
-        tags:["SDE","Bengaluru","Engineer","Happy region"]
-    }
-]
 
 
 export default PostListProvider;
