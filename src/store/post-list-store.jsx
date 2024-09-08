@@ -1,8 +1,8 @@
-import {  createContext, useReducer } from "react";
+import {  createContext, useReducer,useCallback, useState,useEffect } from "react";
  export const PostList=createContext({
     postList:[],
     addPost:()=>{},
-    addInitialPosts:()=>{},
+    fetching:false,
     deletePost:()=>{},
  });
 
@@ -22,19 +22,12 @@ const postListReducer=(currPostList,action)=>{
 };
 const PostListProvider=({children})=>{
     const[postList,dispatchPostList]=useReducer(postListReducer,[]);
+    const [fetching,setFetching]=useState(false);
 
-
-    const addPost=(userId,postTitle,postbody,reactions,tags)=>{
+    const addPost=(post)=>{
         dispatchPostList({
             type:'ADD_POST',
-            payload:{
-                id:Date.now(),
-                title:postTitle,
-                body:postbody,
-                reactions:reactions,
-                userId:userId,
-                tags:tags
-            }
+            payload:post,
         })
 
     }
@@ -49,8 +42,7 @@ const PostListProvider=({children})=>{
 
     }
 
-    const deletePost=(postId)=>{
-        console.log(`delete post called for ${postId}`);
+    const deletePost=useCallback((postId)=>{
         dispatchPostList({
             type:'DELETE_POST',
             payload:{
@@ -58,9 +50,35 @@ const PostListProvider=({children})=>{
             },
         })
 
-    }
+    },[dispatchPostList]);
+
+
+      
+    useEffect(()=>{
+        // before fetching we are setting the value as true but intial value is false when we are using effect it becmoes false
+    
+        setFetching(true);  
+        const controller =new AbortController();
+        const signal=controller.signal;
+    
+        fetch('https://dummyjson.com/posts',{signal})
+        .then(res => res.json())
+        .then(data=>{
+            addInitialPosts(data.posts);
+            setFetching(false);
+            // after fetching we are setting it as false
+    
+        }); 
+    
+        return ()=>{
+            controller.abort();
+        };
+    
+       },[]); 
+
+
     return <PostList.Provider value={
-        {postList,addPost,addInitialPosts,deletePost}
+        {postList,addPost,fetching,deletePost}
     }>
         {children}
     </PostList.Provider>
